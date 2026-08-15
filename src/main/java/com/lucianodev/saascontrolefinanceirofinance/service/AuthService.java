@@ -2,6 +2,7 @@ package com.lucianodev.saascontrolefinanceirofinance.service;
 
 import com.lucianodev.saascontrolefinanceirofinance.entity.TokenVerificacao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
@@ -14,6 +15,7 @@ public class AuthService {
         this.tokenVerificacaoService = tokenVerificacaoService;
     }
 
+    @Transactional
     public void confirmarEmail(String token){
         TokenVerificacao tokenValido = tokenVerificacaoService.validarToken(token);
         tokenVerificacaoService.consumirToken(tokenValido);
