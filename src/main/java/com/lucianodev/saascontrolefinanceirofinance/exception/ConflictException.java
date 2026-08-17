@@ -1,7 +1,7 @@
 package com.lucianodev.saascontrolefinanceirofinance.exception;
 
 public class ConflictException extends RuntimeException {
-    public ConflictException(String message) {
-        super("Erro ao cadastrar! Usuário já foi cadastrado com e-mail: " + message);
+    public ConflictException() {
+        super("Erro ao cadastrar usuário! Este e-mail já está em uso.");
     }
 }
