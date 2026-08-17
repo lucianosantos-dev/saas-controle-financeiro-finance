@@ -39,13 +39,13 @@ public class TokenVerificacaoService {
 
     public TokenVerificacao validarToken(String token) {
         TokenVerificacao encontrado = repository.findByToken(token)
-                .orElseThrow(() -> new TokenInvalidoException(token));
+                .orElseThrow(TokenInvalidoException::new);
 
         if (encontrado.estaExpirado()) {
-            throw new TokenExpiradoException(token);
+            throw new TokenExpiradoException();
         }
         if (encontrado.foiUsado()) {
-            throw new TokenUsadoException(token);
+            throw new TokenUsadoException();
         }
         return encontrado;
     }
