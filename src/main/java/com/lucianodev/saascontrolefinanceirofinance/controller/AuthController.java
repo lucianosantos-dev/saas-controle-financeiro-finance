@@ -1,11 +1,11 @@
 package com.lucianodev.saascontrolefinanceirofinance.controller;
 
+import com.lucianodev.saascontrolefinanceirofinance.dto.request.LoginRequest;
+import com.lucianodev.saascontrolefinanceirofinance.dto.response.LoginResponse;
 import com.lucianodev.saascontrolefinanceirofinance.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -21,5 +21,10 @@ public class AuthController {
     public ResponseEntity<Void> confirmarEmail(@RequestParam String token) {
         authService.confirmarEmail(token);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }
