@@ -5,6 +5,7 @@ import com.lucianodev.saascontrolefinanceirofinance.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -37,6 +38,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TokenUsadoException.class)
     public ResponseEntity<CustomErrorDto> tokenUsado(TokenUsadoException e, HttpServletRequest request) {
         return builderResponse(HttpStatus.BAD_REQUEST, e.getMessage(), request);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<CustomErrorDto> badCredentials(BadCredentialsException e, HttpServletRequest request) {
+        return builderResponse(HttpStatus.UNAUTHORIZED, e.getMessage(), request);
+    }
+
+    @ExceptionHandler(EmailNaoVerificadoException.class)
+    public ResponseEntity<CustomErrorDto> emailNaoVerificado(EmailNaoVerificadoException e, HttpServletRequest request) {
+        return builderResponse(HttpStatus.FORBIDDEN, e.getMessage(), request);
     }
 
     @ExceptionHandler(Exception.class)
