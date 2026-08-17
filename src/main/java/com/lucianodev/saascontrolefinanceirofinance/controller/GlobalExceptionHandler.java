@@ -5,7 +5,10 @@ import com.lucianodev.saascontrolefinanceirofinance.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+ feature/login
 import org.springframework.security.authentication.BadCredentialsException;
+
+ develop
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -40,6 +43,7 @@ public class GlobalExceptionHandler {
         return builderResponse(HttpStatus.BAD_REQUEST, e.getMessage(), request);
     }
 
+feature/login
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<CustomErrorDto> badCredentials(BadCredentialsException e, HttpServletRequest request) {
         return builderResponse(HttpStatus.UNAUTHORIZED, e.getMessage(), request);
@@ -50,6 +54,8 @@ public class GlobalExceptionHandler {
         return builderResponse(HttpStatus.FORBIDDEN, e.getMessage(), request);
     }
 
+
+ develop
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomErrorDto> exception(Exception e, HttpServletRequest request) {
         return builderResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro inesperado no servidor", request);
