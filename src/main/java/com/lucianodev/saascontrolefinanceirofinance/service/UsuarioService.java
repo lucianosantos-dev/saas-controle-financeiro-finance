@@ -47,7 +47,7 @@ public class UsuarioService {
             return usuarioMapper.toResponse(salvo);
 
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException(request.email());
+            throw new ConflictException();
         }
     }
 
@@ -72,7 +72,7 @@ public class UsuarioService {
 
     private void validaEmail(String email) {
         if (repository.existsByEmail(email)) {
-            throw new ConflictException(email);
+            throw new ConflictException();
         }
     }
 }
