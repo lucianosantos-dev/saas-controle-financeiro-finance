@@ -59,6 +59,16 @@ public class GlobalExceptionHandler {
         return builderResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro inesperado no servidor", request);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<CustomErrorDto> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
+        return builderResponse(HttpStatus.NOT_FOUND, e.getMessage(), request);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<CustomErrorDto> usernameNotFound(UsernameNotFoundException e, HttpServletRequest request) {
+        return builderResponse(HttpStatus.NOT_FOUND, e.getMessage(), request);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CustomErrorDto> methodArgument(MethodArgumentNotValidException e, HttpServletRequest request) {
         String msgLimpa = e.getBindingResult().getFieldErrors().stream()
