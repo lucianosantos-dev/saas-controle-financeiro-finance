@@ -1,16 +1,21 @@
 package com.lucianodev.saascontrolefinanceirofinance.service;
 
 import com.lucianodev.saascontrolefinanceirofinance.dto.request.UsuarioRequest;
+import com.lucianodev.saascontrolefinanceirofinance.dto.request.UsuarioUpdateRequest;
 import com.lucianodev.saascontrolefinanceirofinance.dto.response.UsuarioResponse;
 import com.lucianodev.saascontrolefinanceirofinance.entity.Usuario;
 import com.lucianodev.saascontrolefinanceirofinance.enums.TipoVerificacao;
 import com.lucianodev.saascontrolefinanceirofinance.exception.ConflictException;
+import com.lucianodev.saascontrolefinanceirofinance.exception.ResourceNotFoundException;
+import com.lucianodev.saascontrolefinanceirofinance.exception.UsernameNotFoundException;
 import com.lucianodev.saascontrolefinanceirofinance.mapper.UsuarioMapper;
 import com.lucianodev.saascontrolefinanceirofinance.repository.UsuarioRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 
 @Service
@@ -49,6 +54,31 @@ public class UsuarioService {
         } catch (DataIntegrityViolationException e) {
             throw new ConflictException();
         }
+    }
+
+    @Transactional
+    public UsuarioResponse update(UUID id, UsuarioUpdateRequest request) {
+        Usuario user = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
+
+        usuarioMapper.atualizarUsuario(request, user);
+
+        Usuario atualizado = repository.save(user);
+        return usuarioMapper.toResponse(atualizado);
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioResponse findByEmail(String email) {
+        Usuario user = repository.findByEmail(email)
+                .orElseThrow(UsernameNotFoundException::new);
+        return usuarioMapper.toResponse(user);
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioResponse findById(UUID id) {
+        Usuario user = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
+        return usuarioMapper.toResponse(user);
     }
 
     private void enviarEmailConfirmacao(Usuario usuario, String token) {
