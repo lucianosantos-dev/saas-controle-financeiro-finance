@@ -6,6 +6,7 @@ import com.lucianodev.saascontrolefinanceirofinance.dto.response.UsuarioResponse
 import com.lucianodev.saascontrolefinanceirofinance.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -35,9 +36,13 @@ public class UsuarioController {
         return ResponseEntity.created(uri).body(response);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponse> update(@PathVariable UUID id, @Valid @RequestBody UsuarioUpdateRequest request) {
-        return ResponseEntity.ok(service.update(id, request));
+    @PutMapping("/perfil")
+    public ResponseEntity<UsuarioResponse> update(@Valid @RequestBody UsuarioUpdateRequest request,
+                                                  JwtAuthenticationToken token
+
+    ) {
+        UUID identificador = UUID.fromString(token.getName());
+        return ResponseEntity.ok(service.update(identificador, request));
     }
 
     @GetMapping
