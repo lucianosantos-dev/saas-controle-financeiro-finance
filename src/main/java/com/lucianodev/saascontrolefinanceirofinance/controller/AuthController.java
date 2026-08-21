@@ -1,5 +1,6 @@
 package com.lucianodev.saascontrolefinanceirofinance.controller;
 
+import com.lucianodev.saascontrolefinanceirofinance.dto.request.AlterarSenhaRequest;
 import com.lucianodev.saascontrolefinanceirofinance.dto.request.EmailRequest;
 import com.lucianodev.saascontrolefinanceirofinance.dto.request.LoginRequest;
 import com.lucianodev.saascontrolefinanceirofinance.dto.request.NovaSenhaRequest;
@@ -8,9 +9,11 @@ import com.lucianodev.saascontrolefinanceirofinance.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -49,6 +52,19 @@ public class AuthController {
 
         Map<String, String> resposta = Map.of(
                 "Mensagem", "Ação realizada com sucesso."
+        );
+        return ResponseEntity.ok(resposta);
+    }
+
+    @PatchMapping("/perfil/senha")
+    public ResponseEntity<Map<String, String>> alterarSenha(@Valid @RequestBody AlterarSenhaRequest request,
+                                                            JwtAuthenticationToken token) {
+        UUID idUsuario = UUID.fromString(token.getName());
+
+        authService.alterarSenha(idUsuario, request);
+
+        Map<String, String> resposta = Map.of(
+                "Mensagem", "Ação realizada com sucesso"
         );
         return ResponseEntity.ok(resposta);
     }
