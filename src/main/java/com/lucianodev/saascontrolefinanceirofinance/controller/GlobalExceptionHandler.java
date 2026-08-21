@@ -64,8 +64,23 @@ public class GlobalExceptionHandler {
         return builderResponse(HttpStatus.NOT_FOUND, e.getMessage(), request);
     }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<CustomErrorDto> usernameNotFound(UsernameNotFoundException e, HttpServletRequest request) {
+    @ExceptionHandler(UsuarioNaoEncontradoException.class)
+    public ResponseEntity<CustomErrorDto> usarioNaoEncontrado(UsuarioNaoEncontradoException e, HttpServletRequest request) {
+        return builderResponse(HttpStatus.NOT_FOUND, e.getMessage(), request);
+    }
+
+    @ExceptionHandler(OperacaoInvalidaException.class)
+    public ResponseEntity<CustomErrorDto> operacaoInvalida(OperacaoInvalidaException e, HttpServletRequest request) {
+        return builderResponse(HttpStatus.FORBIDDEN, e.getMessage(), request);
+    }
+
+    @ExceptionHandler(UsuarioInativoException.class)
+    public ResponseEntity<CustomErrorDto> usuarioInativo(UsuarioInativoException e, HttpServletRequest request) {
+        return builderResponse(HttpStatus.FORBIDDEN, e.getMessage(), request);
+    }
+
+    @ExceptionHandler(RoleNaoEncontradaException.class)
+    public ResponseEntity<CustomErrorDto> roleNaoEncontrada(RoleNaoEncontradaException e, HttpServletRequest request) {
         return builderResponse(HttpStatus.NOT_FOUND, e.getMessage(), request);
     }
 

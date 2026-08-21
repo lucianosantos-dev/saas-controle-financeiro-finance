@@ -3,12 +3,12 @@ package com.lucianodev.saascontrolefinanceirofinance.service;
 import com.lucianodev.saascontrolefinanceirofinance.dto.request.UsuarioRequest;
 import com.lucianodev.saascontrolefinanceirofinance.dto.request.UsuarioUpdateRequest;
 import com.lucianodev.saascontrolefinanceirofinance.dto.response.UsuarioResponse;
+import com.lucianodev.saascontrolefinanceirofinance.entity.Role;
 import com.lucianodev.saascontrolefinanceirofinance.entity.Usuario;
 import com.lucianodev.saascontrolefinanceirofinance.enums.TipoVerificacao;
-import com.lucianodev.saascontrolefinanceirofinance.exception.ConflictException;
-import com.lucianodev.saascontrolefinanceirofinance.exception.ResourceNotFoundException;
-import com.lucianodev.saascontrolefinanceirofinance.exception.UsernameNotFoundException;
+import com.lucianodev.saascontrolefinanceirofinance.exception.*;
 import com.lucianodev.saascontrolefinanceirofinance.mapper.UsuarioMapper;
+import com.lucianodev.saascontrolefinanceirofinance.repository.RoleRepository;
 import com.lucianodev.saascontrolefinanceirofinance.repository.UsuarioRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,22 +26,32 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final TokenVerificacaoService tokenVerificacaoService;
+    private final RoleRepository roleRepository;
 
-    public UsuarioService(UsuarioRepository repository, UsuarioMapper usuarioMapper, PasswordEncoder passwordEncoder, EmailService emailService, TokenVerificacaoService tokenVerificacaoService) {
+    public UsuarioService(UsuarioRepository repository,
+                          UsuarioMapper usuarioMapper,
+                          PasswordEncoder passwordEncoder,
+                          EmailService emailService,
+                          TokenVerificacaoService tokenVerificacaoService,
+                          RoleRepository roleRepository) {
+
         this.repository = repository;
         this.usuarioMapper = usuarioMapper;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.tokenVerificacaoService = tokenVerificacaoService;
+        this.roleRepository = roleRepository;
     }
 
     @Transactional
     public UsuarioResponse create(UsuarioRequest request) {
         validaEmail(request.email());
+        Role userRole = roleRepository.findByNome("USER")
+                .orElseThrow(() -> new RoleNaoEncontradaException("Role não encontrada"));
         Usuario usuario = usuarioMapper.toEntity(request);
 
+        usuario.getRoles().add(userRole);
         usuario.setSenhaHash(passwordEncoder.encode(request.senha()));
-
         try {
             Usuario salvo = repository.save(usuario);
 
@@ -70,7 +80,7 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public UsuarioResponse findByEmail(String email) {
         Usuario user = repository.findByEmail(email)
-                .orElseThrow(UsernameNotFoundException::new);
+                .orElseThrow(UsuarioNaoEncontradoException::new);
         return usuarioMapper.toResponse(user);
     }
 
@@ -79,6 +89,16 @@ public class UsuarioService {
         Usuario user = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
         return usuarioMapper.toResponse(user);
+    }
+
+
+    @Transactional
+    public void desativarUsuario(UUID idUsuario) {
+        Usuario user = repository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException(idUsuario.toString()));
+
+        user.desativar();
+        repository.save(user);
     }
 
     private void enviarEmailConfirmacao(Usuario usuario, String token) {

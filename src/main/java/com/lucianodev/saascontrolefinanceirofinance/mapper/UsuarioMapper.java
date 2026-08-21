@@ -24,5 +24,6 @@ public interface UsuarioMapper {
     @Mapping(target = "moeda", ignore = true)
     @Mapping(target = "fusoHorario", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
+    @Mapping(target = "ativo", ignore = true)
     void atualizarUsuario(UsuarioUpdateRequest request, @MappingTarget Usuario entity);
 }
