@@ -101,6 +101,15 @@ public class UsuarioService {
         repository.save(user);
     }
 
+    @Transactional
+    public void ativarUsuario(UUID idUsuario) {
+        Usuario user = repository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException(idUsuario.toString()));
+
+        user.reativar();
+        repository.save(user);
+    }
+
     private void enviarEmailConfirmacao(Usuario usuario, String token) {
         String destino = usuario.getEmail();
         String assunto = "FINANCE Controle Financeiro: Confirmação de e-mail";
@@ -112,6 +121,11 @@ public class UsuarioService {
                 + link;
 
         emailService.sendEmail(destino, assunto, corpo);
+    }
+
+    @Transactional
+    public void excluirConta(UUID idUsuario){
+        repository.deleteById(idUsuario);
     }
 
     @Transactional
