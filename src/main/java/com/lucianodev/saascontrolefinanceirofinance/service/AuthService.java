@@ -5,6 +5,7 @@ import com.lucianodev.saascontrolefinanceirofinance.dto.response.LoginResponse;
 import com.lucianodev.saascontrolefinanceirofinance.entity.TokenVerificacao;
 import com.lucianodev.saascontrolefinanceirofinance.entity.Usuario;
 import com.lucianodev.saascontrolefinanceirofinance.exception.EmailNaoVerificadoException;
+import com.lucianodev.saascontrolefinanceirofinance.exception.UsuarioInativoException;
 import com.lucianodev.saascontrolefinanceirofinance.repository.UsuarioRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,17 +54,24 @@ public class AuthService {
         if (!optUser.get().getEmailVerificado()) {
             throw new EmailNaoVerificadoException();
         }
+        if (!optUser.get().getAtivo()) {
+            throw new UsuarioInativoException();
+        }
 
         Usuario usuarioSalvo = optUser.get();
 
         long expiracaoEm = 600L;
+
+        List<String> roles = usuarioSalvo.getRoles().stream()
+                .map(role -> "ROLE_" + role.getNome())
+                .toList();
 
         JwtClaimsSet jwt = JwtClaimsSet.builder()
                 .issuer("saas-financeiro")
                 .subject(usuarioSalvo.getId().toString())
                 .expiresAt(Instant.now().plusSeconds(expiracaoEm))
                 .issuedAt(Instant.now())
-                .claim("email", usuarioSalvo.getEmail())
+                .claim("scope", String.join(" ", roles))
                 .build();
 
         String token = jwtEncoder.encode(JwtEncoderParameters.from(jwt)).getTokenValue();
