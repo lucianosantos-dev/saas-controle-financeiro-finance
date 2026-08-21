@@ -54,4 +54,11 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponse> findById(@PathVariable UUID id) {
         return ResponseEntity.ok(service.findById(id));
     }
+
+    @DeleteMapping("/perfil/me")
+    public ResponseEntity<Void> deleteById(JwtAuthenticationToken token) {
+        UUID idUsuario = UUID.fromString(token.getName());
+        service.excluirConta(idUsuario);
+        return ResponseEntity.noContent().build();
+    }
 }

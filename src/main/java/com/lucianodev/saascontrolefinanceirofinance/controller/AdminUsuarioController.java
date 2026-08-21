@@ -26,4 +26,10 @@ public class AdminUsuarioController {
         service.desativarUsuario(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("{id}/ativar")
+    public ResponseEntity<Void> ativarUsuario(@PathVariable UUID id) {
+        service.ativarUsuario(id);
+        return ResponseEntity.noContent().build();
+    }
 }
