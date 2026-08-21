@@ -1,5 +1,6 @@
 package com.lucianodev.saascontrolefinanceirofinance.service;
 
+import com.lucianodev.saascontrolefinanceirofinance.dto.request.AlterarSenhaRequest;
 import com.lucianodev.saascontrolefinanceirofinance.dto.request.EmailRequest;
 import com.lucianodev.saascontrolefinanceirofinance.dto.request.LoginRequest;
 import com.lucianodev.saascontrolefinanceirofinance.dto.request.NovaSenhaRequest;
@@ -8,6 +9,7 @@ import com.lucianodev.saascontrolefinanceirofinance.entity.TokenVerificacao;
 import com.lucianodev.saascontrolefinanceirofinance.entity.Usuario;
 import com.lucianodev.saascontrolefinanceirofinance.enums.TipoVerificacao;
 import com.lucianodev.saascontrolefinanceirofinance.exception.EmailNaoVerificadoException;
+import com.lucianodev.saascontrolefinanceirofinance.exception.ResourceNotFoundException;
 import com.lucianodev.saascontrolefinanceirofinance.exception.UsuarioInativoException;
 import com.lucianodev.saascontrolefinanceirofinance.repository.UsuarioRepository;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -39,7 +42,7 @@ public class AuthService {
                        JwtEncoder jwtEncoder,
                        PasswordEncoder passwordEncoder,
                        EmailService emailService
-                       ) {
+    ) {
 
         this.usuarioService = usuarioService;
         this.tokenVerificacaoService = tokenVerificacaoService;
@@ -80,6 +83,19 @@ public class AuthService {
         String token = tokenVerificacaoService.gerarToken(user, TipoVerificacao.REDEFINICAO_SENHA);
 
         enviarEmailRedefinicaoSenha(user, token);
+    }
+
+    public void alterarSenha(UUID idUsuario, AlterarSenhaRequest request) {
+        Usuario user = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException(idUsuario.toString()));
+
+        if (!passwordEncoder.matches(request.senhaAtual(), user.getSenhaHash())) {
+            throw new BadCredentialsException("A senha atual informada está incorreta");
+        }
+
+        user.setSenhaHash(passwordEncoder.encode(request.novaSenha()));
+
+        usuarioRepository.save(user);
     }
 
     private void enviarEmailRedefinicaoSenha(Usuario usuario, String token) {
