@@ -49,7 +49,6 @@ public class UsuarioService {
         Role userRole = roleRepository.findByNome("USER")
                 .orElseThrow(() -> new RoleNaoEncontradaException("Role não encontrada"));
         Usuario usuario = usuarioMapper.toEntity(request);
-
         usuario.getRoles().add(userRole);
         usuario.setSenhaHash(passwordEncoder.encode(request.senha()));
         try {
@@ -69,7 +68,7 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponse update(UUID id, UsuarioUpdateRequest request) {
         Usuario user = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
+                .orElseThrow(UsuarioNaoEncontradoException::new);
 
         usuarioMapper.atualizarUsuario(request, user);
 
@@ -87,7 +86,7 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public UsuarioResponse findById(UUID id) {
         Usuario user = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
+                .orElseThrow(UsuarioNaoEncontradoException::new);
         return usuarioMapper.toResponse(user);
     }
 
@@ -95,7 +94,7 @@ public class UsuarioService {
     @Transactional
     public void desativarUsuario(UUID idUsuario) {
         Usuario user = repository.findById(idUsuario)
-                .orElseThrow(() -> new ResourceNotFoundException(idUsuario.toString()));
+                .orElseThrow(UsuarioNaoEncontradoException::new);
 
         user.desativar();
         repository.save(user);
@@ -104,7 +103,7 @@ public class UsuarioService {
     @Transactional
     public void ativarUsuario(UUID idUsuario) {
         Usuario user = repository.findById(idUsuario)
-                .orElseThrow(() -> new ResourceNotFoundException(idUsuario.toString()));
+                .orElseThrow(UsuarioNaoEncontradoException::new);
 
         user.reativar();
         repository.save(user);
@@ -125,6 +124,7 @@ public class UsuarioService {
 
     @Transactional
     public void excluirConta(UUID idUsuario){
+        if (!repository.existsById(idUsuario)) return;
         repository.deleteById(idUsuario);
     }
 
