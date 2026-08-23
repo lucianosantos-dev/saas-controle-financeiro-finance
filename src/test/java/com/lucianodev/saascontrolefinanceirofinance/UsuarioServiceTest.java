@@ -104,7 +104,7 @@ public class UsuarioServiceTest {
 
 
     @Test
-    public void deveLancarExcecao_QuandoTentarDesativarUsuarioInexixstente() {
+    public void deveLancarExcecao_QuandoTentarDesativarUsuarioInexistente() {
         when(usuarioRepository.findById(idFalso)).thenReturn(Optional.empty());
 
         assertThrows(UsuarioNaoEncontradoException.class, () ->
