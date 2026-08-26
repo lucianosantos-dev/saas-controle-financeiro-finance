@@ -18,4 +18,18 @@ public class TokenFactory {
         tokenVerificacao.setUsuario(usuarioValido());
         return tokenVerificacao;
     }
+
+    public static TokenVerificacao tokenVerificacaoExpirado() {
+        TokenVerificacao token = tokenVerificacaoValido();
+        token.setExpiraEm(LocalDateTime.now().minusDays(1));
+        return token;
+    }
+
+    public static TokenVerificacao tokenVerificacaoUsado(){
+        TokenVerificacao token = tokenVerificacaoValido();
+
+        token.setExpiraEm(LocalDateTime.now().plusDays(1));
+        token.setUsadoEm(LocalDateTime.now());
+        return token;
+    }
 }
