@@ -11,6 +11,7 @@ import com.lucianodev.saascontrolefinanceirofinance.enums.TipoVerificacao;
 import com.lucianodev.saascontrolefinanceirofinance.exception.EmailNaoVerificadoException;
 import com.lucianodev.saascontrolefinanceirofinance.exception.ResourceNotFoundException;
 import com.lucianodev.saascontrolefinanceirofinance.exception.UsuarioInativoException;
+import com.lucianodev.saascontrolefinanceirofinance.exception.UsuarioNaoEncontradoException;
 import com.lucianodev.saascontrolefinanceirofinance.repository.UsuarioRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -87,7 +88,7 @@ public class AuthService {
 
     public void alterarSenha(UUID idUsuario, AlterarSenhaRequest request) {
         Usuario user = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new ResourceNotFoundException(idUsuario.toString()));
+                .orElseThrow(UsuarioNaoEncontradoException::new);
 
         if (!passwordEncoder.matches(request.senhaAtual(), user.getSenhaHash())) {
             throw new BadCredentialsException("A senha atual informada está incorreta");
