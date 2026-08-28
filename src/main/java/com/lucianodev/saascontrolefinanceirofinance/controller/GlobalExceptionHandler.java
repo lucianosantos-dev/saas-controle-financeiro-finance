@@ -74,6 +74,11 @@ public class GlobalExceptionHandler {
         return builderResponse(HttpStatus.FORBIDDEN, e.getMessage(), request);
     }
 
+    @ExceptionHandler(CategoriaDuplicadaException.class)
+    public ResponseEntity<CustomErrorDto> categoriaDuplicada(CategoriaDuplicadaException e, HttpServletRequest request) {
+        return builderResponse(HttpStatus.CONFLICT, e.getMessage(), request);
+    }
+
     @ExceptionHandler(UsuarioInativoException.class)
     public ResponseEntity<CustomErrorDto> usuarioInativo(UsuarioInativoException e, HttpServletRequest request) {
         return builderResponse(HttpStatus.FORBIDDEN, e.getMessage(), request);
@@ -81,6 +86,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RoleNaoEncontradaException.class)
     public ResponseEntity<CustomErrorDto> roleNaoEncontrada(RoleNaoEncontradaException e, HttpServletRequest request) {
+        return builderResponse(HttpStatus.NOT_FOUND, e.getMessage(), request);
+    }
+
+    @ExceptionHandler(CategoriaNaoEncontradaException.class)
+    public ResponseEntity<CustomErrorDto> categoriaNaoEncontrada(CategoriaNaoEncontradaException e, HttpServletRequest request) {
         return builderResponse(HttpStatus.NOT_FOUND, e.getMessage(), request);
     }
 
